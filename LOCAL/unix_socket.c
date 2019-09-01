@@ -19,12 +19,12 @@ void client(const char *filename)
 	char buffer[msglen];
 	bzero(buffer, msglen);
 
-	bzero((char *)&serv_addr,sizeof(serv_addr));
+	bzero((char *)&serv_addr, sizeof(serv_addr));
 	serv_addr.sun_family = AF_UNIX;
 	strcpy(serv_addr.sun_path, filename);
 	servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
 
-	if ((sockfd = socket(AF_UNIX, SOCK_STREAM,0)) < 0)
+	if ((sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
 		error("Creating socket");
 
 	if (connect(sockfd, (struct sockaddr *) &serv_addr, servlen) < 0)
@@ -43,26 +43,24 @@ void client(const char *filename)
 
 void server(const char *filename)
 {
-	int sockfd,  newsockfd,  servlen,  n;
-	socklen_t clilen;
-	struct sockaddr_un  cli_addr,  serv_addr;
+	int sockfd, newsockfd, servlen, n;
+	struct sockaddr_un serv_addr;
 	char buf[80];
 
 	if ((sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
 		error("creating socket");
 
-	bzero((char *) &serv_addr,  sizeof(serv_addr));
+	bzero((char *) &serv_addr, sizeof(serv_addr));
 	serv_addr.sun_family = AF_UNIX;
 	strcpy(serv_addr.sun_path, filename);
 	servlen = strlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
 
-	if(bind(sockfd, (struct sockaddr *)&serv_addr, servlen)<0)
+	if(bind(sockfd, (struct sockaddr *)&serv_addr, servlen) < 0)
 		error("binding socket");
 
 	listen(sockfd, 5);
-	clilen = sizeof(cli_addr);
 
-	newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+	newsockfd = accept(sockfd, NULL, NULL);
 	if (newsockfd < 0)
 		error("accepting");
 
@@ -83,7 +81,7 @@ void error_usage(const char *executable)
 	exit(0);
 }
 
-int main(int argc,  char *argv[])
+int main(int argc, char *argv[])
 {
 	const char *sockname = "test.socket";
 
