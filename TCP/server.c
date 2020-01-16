@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_in serv_addr, cli_addr;
 
 	if (argc < 2) {
-		fprintf(stderr,"ERROR, no port provided\n");
+		fprintf(stderr, "ERROR, no port provided\n");
 		exit(1);
 	}
 
@@ -44,14 +44,19 @@ int main(int argc, char *argv[])
 	if (newsockfd < 0)
 		error("ERROR on accept");
 
+	int flag = 1;
+	if (-1 == setsockopt(newsockfd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag))) {
+		error("setsockopt fail");
+	}
+
 	bzero(buffer, 256);
-	n = read(newsockfd,buffer,255);
+	n = recv(newsockfd, buffer, 255, 0);
 	if (n < 0)
 		error("ERROR reading from socket");
 
-	printf("Here is the message: %s\n",buffer);
+	printf("Here is the message: %s\n", buffer);
 
-	n = write(newsockfd,"I got your message",18);
+	n = send(newsockfd, "I got your message", 18, 0);
 	if (n < 0)
 		error("ERROR writing to socket");
 
